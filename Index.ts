@@ -87,3 +87,38 @@ app.delete("/teams/:id", (req, res)=>{
 })
 
 app.listen(3000, () => console.log("Servidor en http://localhost:3000"));
+
+//parte dos
+const testAPI = async()=>{
+
+    //obtener todos los equipos de la lista
+    const miPromesa = (await(axios.get<Team[]>("http://localhost:3000"))).data;
+    console.log(miPromesa);
+
+    //crear un nuevo equipo
+    const miEquipo : Team = {
+        id: 1, 
+        name: "asasasa", 
+        city: "miami", 
+        titles: 111 ,
+    }
+
+    axios.post(`http://localhost:3000`, miEquipo);
+
+    //volver a comprobar todos los equipos y comprobar que salen los nuevos
+    const miPromesa2 = (await(axios.get<Team[]>("http://localhost:3000"))).data;
+    console.log(miPromesa2);
+
+    const condicion = miPromesa2.find((elem)=>{
+        if(elem.name === miEquipo.name){
+            return elem;
+        }
+    })
+
+    await axios.delete(`http://localhost:3000/teams/${condicion?.id}`);
+
+    const miPromesa3 = (await(axios.get<Team[]>("http://localhost:3000"))).data;
+    console.log(miPromesa3);
+}
+
+setTimeout((testAPI), 1000);
