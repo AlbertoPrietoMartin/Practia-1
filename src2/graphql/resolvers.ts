@@ -2,12 +2,14 @@ import { format } from "path";
 import { IResolvers } from "@graphql-tools/utils";
 import { title } from "process";
 import { getDB } from "../db/mongo";
-import { ObjectId } from "mongodb";
+import { Collection, ObjectId } from "mongodb";
 import { createUser, validateUser } from "../collections/users";
 import { signToken } from "../auth";
 import { validate } from "graphql";
+import {usersVideoGames} from "../types/User";
 
 const COLLECTION = "VideoGames";
+const COLLECTION_USERS = "usersVideoGames";
 
 export const resolvers: IResolvers = {
     Query : {
@@ -72,9 +74,52 @@ export const resolvers: IResolvers = {
             return signToken(user._id.toString());
 
 
+        },
+
+        addVideoGameToMyList: async (_, {videoGameID}: {videoGameID: string}, {user})=>{
+
+            if(!user) {
+                throw Error("Por aqui no Puri, logeate");
+            }
+
+            const db = getDB();
+             
+            const videoGameToAdd = await db.collection(COLLECTION).findOne({_id: new ObjectId(videoGameID)});
+            if(videoGameToAdd){
+                throw new Error ("Te lo inventatse");
+            }
+
+            await db.collection(COLLECTION_USERS).updateOne(
+                {_id: user._id},
+                {$addToSet: {listOfMyGames: videoGameToAdd!._id}}
+            );
+
+            const updateUser = await db.collection(COLLECTION_USERS).findOne()
+
+            if(!updateUser){
+                throw new Error ("Usuario no encontrado despues de la actualizacion");
+            }
+
+            return {
+                id: updateUser._id.toString(),
+                ...updateUser
+            }
+        }
+    },
+
+        User:{
+            listOfMyGames: async (parent) =>{
+                const db = getDB();
+                const listOfVideoGamesIDs = parent.listOfMyGames as  Array<string> || [];
+
+                const videoGamesListOfObjects = await db.collection(COLLECTION).find({
+                    _id: {$in: listOfVideoGamesIDs.map(id=> new ObjectId(id))}
+                }).toArray();
+
+                return videoGamesListOfObjects;
+            }
         }
     }
-}
 
 /*
 type Album = {
