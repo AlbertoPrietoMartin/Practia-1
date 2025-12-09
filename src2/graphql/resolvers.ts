@@ -73,7 +73,6 @@ export const resolvers: IResolvers = {
 
             return signToken(user._id.toString());
 
-
         },
 
         addVideoGameToMyList: async (_, {videoGameID}: {videoGameID: string}, {user})=>{

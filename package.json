@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "ts-node ./src2/index.ts",
-    "dev": "nodemon --exec ts-node ./src2/index.ts"
+    "start": "ts-node ./SIMULACRO_FINAL/index.ts",
+    "dev": "nodemon --exec ts-node ./SIMULACRO_FINAL/index.ts"
   },
   "keywords": [],
   "author": "",
