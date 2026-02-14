@@ -120,7 +120,6 @@ async function ejecutarObtenerTitulos() {
   try {
     const titulos = await obtenerTitulosDePosts();
     console.log(`Títulos de los posts (con async/await): ${titulos}`);
-    console.log("FIN DE PROGRAMA :)");
   } catch (error) {
     console.error(`Error al obtener los títulos (con async/await): ${error}`);
   }
